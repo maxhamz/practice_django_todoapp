@@ -15,14 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from todoapp_backend.views import ApiOverview, addNewTask, getOneTask
+from todoapp_backend.views import ApiOverview, addNewTask, getOneTask, getTasksList, taskDelete, taskEdit
 # from todoapp_backend.views import TaskList, TaskDetail
 
 urlpatterns = [
     path('', ApiOverview, name='home'),
     path('admin/', admin.site.urls, name='admin_portal'),
     path('tasks/create', addNewTask, name='create-task'),
+    path('tasks/getList', getTasksList, name='task-lists'),
     path('tasks/<int:pk>/getOne', getOneTask, name='retrieve-task'),
-    # path('tasks/<int:pk>/', TaskDetail.as_view(), name='task_detail'),
+    path('tasks/<int:pk>/drop', taskDelete, name='drop-task'),
+    path('tasks/<int:pk>/edit', taskEdit, name='edit-task'),
+    # path('tasks/getList/', TaskDetail.as_view(), name='task_detail'),
     # path('tasks/', TaskList.as_view(), name='task_list'),
 ]
