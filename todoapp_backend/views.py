@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import serializers, status
+from django.utils import timezone
 from .models import Task
 from .serializers import TaskSerializer
 
@@ -72,13 +73,28 @@ def taskDelete(request, pk):
 # EDIT ONE TASK
 @api_view(['PUT'])
 def taskEdit(request, pk):
+    noEditFields = ["id", "created_at", "last_modified_at"]
     try:
+        editForm = request.data
+        for i in editForm.keys():
+            if i in noEditFields:
+                errorMessage = "FORBIDDEN EDIT FIELD: %s" % (i)
+                return Response(data=errorMessage, status=status.HTTP_400_BAD_REQUEST)
+        
         task = Task.objects.get(pk=pk)
-        serialized = TaskSerializer(instance=task, data=request.data)
+        taskInJSON = TaskSerializer(task).data
+        editForm['last_modified_at'] = timezone.now()
+        
+        
+        # REPLACE EACH FIELD IN TASK WITH THE ONES IN EDITFORM
+        for f in editForm.keys():
+            taskInJSON[f] = editForm[f]
+
+        serialized = TaskSerializer(instance=task, data=taskInJSON)
         if serialized.is_valid():
             serialized.save()
             return Response(data=serialized.data, status=status.HTTP_200_OK)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(data='INVALID EDIT FORM ENTRY', status=status.HTTP_400_BAD_REQUEST)
     except Task.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
