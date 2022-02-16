@@ -42,14 +42,9 @@ def addNewTask(request):
 # VIEW ONE TASK
 @api_view(['GET'])
 def getOneTask(request, pk):
-    print('GET ONE TASK')
     try:
         task = Task.objects.get(pk=pk)
-        print('THIS IS THE TASK')
-        print(task)
-        print('THIS IS THE SERIALIZED TASK')
         serialized = TaskSerializer(task)
-        print(serialized)
         return Response(data=serialized.data, status=status.HTTP_200_OK)
     except Task.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -58,25 +53,16 @@ def getOneTask(request, pk):
 # VIEW TASK LIST
 @api_view(['GET'])
 def getTasksList(request):
-    print('PRINT LIST OF TASKS')
-   
     tasks = Task.objects.all()
-    print('THIS IS THE TASK')
-    print(tasks)
-    print('THIS IS THE SERIALIZED TASK')
     serialized = TaskSerializer(tasks, many=True)
-    print(serialized)
     return Response(data=serialized.data, status=status.HTTP_200_OK)
 
 
 # DROP ONE TASK
 @api_view(['DELETE'])
 def taskDelete(request, pk):
-    print('GET ONE TASK FOR DELETION')
     try:
         task = Task.objects.get(pk=pk)
-        print('THIS IS THE TASK 2 DELETE')
-        print(task)
         task.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     except Task.DoesNotExist:
@@ -88,8 +74,6 @@ def taskDelete(request, pk):
 def taskEdit(request, pk):
     try:
         task = Task.objects.get(pk=pk)
-        print('THIS IS THE TASK 2 EDIT')
-        print(task)
         serialized = TaskSerializer(instance=task, data=request.data)
         if serialized.is_valid():
             serialized.save()
