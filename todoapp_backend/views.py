@@ -37,7 +37,9 @@ def addNewTask(request):
         return Response(data=newTask.data, status=status.HTTP_201_CREATED)
     
     else:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        print('what is newTask error')
+        print(newTask)
+        return Response(data='INVALID ENTRY FORM FIELD(S) INPUT', status=status.HTTP_400_BAD_REQUEST)
 
 
 # VIEW ONE TASK
@@ -48,7 +50,7 @@ def getOneTask(request, pk):
         serialized = TaskSerializer(task)
         return Response(data=serialized.data, status=status.HTTP_200_OK)
     except Task.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(data='ENTRY NOT FOUND', status=status.HTTP_404_NOT_FOUND)
 
 
 # VIEW TASK LIST
@@ -65,9 +67,10 @@ def taskDelete(request, pk):
     try:
         task = Task.objects.get(pk=pk)
         task.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        deleteMessage = "DROP ENTRY SUCCESSFUL FOR ID: %s" % (pk)
+        return Response(data=deleteMessage, status=status.HTTP_204_NO_CONTENT)
     except Task.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(data='ENTRY NOT FOUND', status=status.HTTP_404_NOT_FOUND)
 
 
 # EDIT ONE TASK
@@ -75,26 +78,31 @@ def taskDelete(request, pk):
 def taskEdit(request, pk):
     noEditFields = ["id", "created_at", "last_modified_at"]
     try:
+        # LOOKOUT IF REQUEST FORM CONTAINS VERBOTEN FIELDS
         editForm = request.data
+        invalidFields = []
         for i in editForm.keys():
             if i in noEditFields:
-                errorMessage = "FORBIDDEN EDIT FIELD: %s" % (i)
-                return Response(data=errorMessage, status=status.HTTP_400_BAD_REQUEST)
+                invalidFields.append(i)
         
+        if len(invalidFields) > 0:
+            errorMessage = "FORBIDDEN INPUT FIELD: %s" % (invalidFields)
+            return Response(data=errorMessage, status=status.HTTP_400_BAD_REQUEST)
+
         task = Task.objects.get(pk=pk)
         taskInJSON = TaskSerializer(task).data
-        editForm['last_modified_at'] = timezone.now()
-        
         
         # REPLACE EACH FIELD IN TASK WITH THE ONES IN EDITFORM
         for f in editForm.keys():
             taskInJSON[f] = editForm[f]
-
+        
+        taskInJSON['last_modified_at'] = timezone.now()
+            
         serialized = TaskSerializer(instance=task, data=taskInJSON)
         if serialized.is_valid():
             serialized.save()
             return Response(data=serialized.data, status=status.HTTP_200_OK)
         else:
-            return Response(data='INVALID EDIT FORM ENTRY', status=status.HTTP_400_BAD_REQUEST)
+            return Response(data='INVALID FORM ENTRY', status=status.HTTP_400_BAD_REQUEST)
     except Task.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(data='ENTRY NOT FOUND', status=status.HTTP_404_NOT_FOUND)
