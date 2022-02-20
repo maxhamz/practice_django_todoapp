@@ -1,4 +1,5 @@
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import ValidationError, ParseError
 from rest_framework.response import Response
 from rest_framework import serializers, status
 from django.utils import timezone
@@ -27,18 +28,25 @@ def ApiOverview(request):
 # CREATE NEW TASK
 @api_view(['POST'])
 def addNewTask(request):
-    newTask = TaskSerializer(data=request.data)
+    noEditFields = ["id", "created_at", "last_modified_at"]
+    newTaskForm = request.data
     
-    # # validating for already existing data
-    # if Task.objects.filter(**request.data).exists():
-    #     raise serializers.ValidationError('Task already exist')
-    
+    # LOOKOUT IF REQUEST FORM CONTAINS VERBOTEN FIELDS
+    invalidFields = []
+    for i in newTaskForm.keys():
+        if i in noEditFields:
+            invalidFields.append(i)
+        
+    if len(invalidFields) > 0:
+        errorMessage = "FORBIDDEN INPUT FIELD: %s" % (invalidFields)
+        raise ValidationError(detail=errorMessage)
+
+    newTask = TaskSerializer(data=newTaskForm)
     if newTask.is_valid():
         newTask.save()
         return Response(data=newTask.data, status=status.HTTP_201_CREATED)
-    
     else:
-        return Response(data='INVALID ENTRY FORM FIELD(S) INPUT', status=status.HTTP_400_BAD_REQUEST)
+        raise ParseError()
 
 
 # VIEW ONE TASK
@@ -87,7 +95,7 @@ def taskEdit(request, pk):
         
         if len(invalidFields) > 0:
             errorMessage = "FORBIDDEN INPUT FIELD: %s" % (invalidFields)
-            return Response(data=errorMessage, status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError(detail=errorMessage)
 
         task = Task.objects.get(pk=pk)
         taskInJSON = TaskSerializer(task).data
@@ -102,7 +110,5 @@ def taskEdit(request, pk):
         if serialized.is_valid():
             serialized.save()
             return Response(data=serialized.data, status=status.HTTP_200_OK)
-        else:
-            return Response(data='INVALID FORM ENTRY', status=status.HTTP_400_BAD_REQUEST)
     except Task.DoesNotExist:
         raise Http404

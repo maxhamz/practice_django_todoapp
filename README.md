@@ -91,7 +91,17 @@ You are now ready to work on or review the functionalities.
         ```
     * Error Response(s):
         - Code: 400
-        - Example: `"INVALID ENTRY FORM FIELD(S) INPUT"`
+        - Example:
+        ```
+        {
+            "detail": "Malformed request."
+        }
+        ```
+         ```
+        [
+            "FORBIDDEN INPUT FIELD: ['created_at']"
+        ]
+        ```
 
 2.  GET ONE: `tasks/<pk>/getOne`
     * Method: `GET`
@@ -189,7 +199,12 @@ You are now ready to work on or review the functionalities.
           }
           ```
       2.  Code: 400
-          Example: `"FORBIDDEN INPUT FIELD: ['id', 'created_at']"`
+          Example:
+          ```
+          [
+            "FORBIDDEN INPUT FIELD: ['id', 'created_at']"
+          ]
+          ```
 
 
 5.  DROP: `tasks/<pk>/drop`
