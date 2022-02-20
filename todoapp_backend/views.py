@@ -1,5 +1,6 @@
 from rest_framework.decorators import api_view
-from rest_framework.exceptions import ValidationError, ParseError
+from rest_framework.exceptions import ParseError
+from .exceptions import forbiddenInputError
 from rest_framework.response import Response
 from rest_framework import serializers, status
 from django.utils import timezone
@@ -28,25 +29,16 @@ def ApiOverview(request):
 # CREATE NEW TASK
 @api_view(['POST'])
 def addNewTask(request):
-    noEditFields = ["id", "created_at", "last_modified_at"]
     newTaskForm = request.data
     
     # LOOKOUT IF REQUEST FORM CONTAINS VERBOTEN FIELDS
-    invalidFields = []
-    for i in newTaskForm.keys():
-        if i in noEditFields:
-            invalidFields.append(i)
-        
-    if len(invalidFields) > 0:
-        errorMessage = "FORBIDDEN INPUT FIELD: %s" % (invalidFields)
-        raise ValidationError(detail=errorMessage)
-
-    newTask = TaskSerializer(data=newTaskForm)
-    if newTask.is_valid():
-        newTask.save()
-        return Response(data=newTask.data, status=status.HTTP_201_CREATED)
-    else:
-        raise ParseError()
+    if forbiddenInputError(newTaskForm) == None:
+        newTask = TaskSerializer(data=newTaskForm)
+        if newTask.is_valid():
+            newTask.save()
+            return Response(data=newTask.data, status=status.HTTP_201_CREATED)
+        else:
+            raise ParseError()
 
 
 # VIEW ONE TASK
@@ -84,31 +76,22 @@ def taskDelete(request, pk):
 # EDIT ONE TASK
 @api_view(['PUT'])
 def taskEdit(request, pk):
-    noEditFields = ["id", "created_at", "last_modified_at"]
     try:
         # LOOKOUT IF REQUEST FORM CONTAINS VERBOTEN FIELDS
         editForm = request.data
-        invalidFields = []
-        for i in editForm.keys():
-            if i in noEditFields:
-                invalidFields.append(i)
+        if forbiddenInputError(editForm) == None:
+            task = Task.objects.get(pk=pk)
+            taskInJSON = TaskSerializer(task).data
         
-        if len(invalidFields) > 0:
-            errorMessage = "FORBIDDEN INPUT FIELD: %s" % (invalidFields)
-            raise ValidationError(detail=errorMessage)
-
-        task = Task.objects.get(pk=pk)
-        taskInJSON = TaskSerializer(task).data
+            # REPLACE EACH FIELD IN TASK WITH THE ONES IN EDITFORM
+            for f in editForm.keys():
+                taskInJSON[f] = editForm[f]
         
-        # REPLACE EACH FIELD IN TASK WITH THE ONES IN EDITFORM
-        for f in editForm.keys():
-            taskInJSON[f] = editForm[f]
-        
-        taskInJSON['last_modified_at'] = timezone.now()
+            taskInJSON['last_modified_at'] = timezone.now()
             
-        serialized = TaskSerializer(instance=task, data=taskInJSON)
-        if serialized.is_valid():
-            serialized.save()
-            return Response(data=serialized.data, status=status.HTTP_200_OK)
+            serialized = TaskSerializer(instance=task, data=taskInJSON)
+            if serialized.is_valid():
+                serialized.save()
+                return Response(data=serialized.data, status=status.HTTP_200_OK)
     except Task.DoesNotExist:
         raise Http404

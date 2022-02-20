@@ -1,7 +1,15 @@
-from rest_framework.views import APIView
+from rest_framework.exceptions import ValidationError
 
 
-class EntryNotFound(APIView):
-    status_code = 404
-    default_detail = "ENTRY NOT FOUND"
-    default_code = "entry_not_found"
+def forbiddenInputError(request):
+    noEditFields = ["id", "created_at", "last_modified_at"]
+    invalidFields = []
+    for i in request.keys():
+        if i in noEditFields:
+            invalidFields.append(i)
+        
+    if len(invalidFields) > 0:
+        errorMessage = "FORBIDDEN INPUT FIELD: %s" % (invalidFields)
+        raise ValidationError(detail=errorMessage)
+    
+    return None
