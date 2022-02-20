@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import serializers, status
 from django.utils import timezone
+from django.http import Http404
 from .models import Task
 from .serializers import TaskSerializer
 
@@ -37,20 +38,19 @@ def addNewTask(request):
         return Response(data=newTask.data, status=status.HTTP_201_CREATED)
     
     else:
-        print('what is newTask error')
-        print(newTask)
         return Response(data='INVALID ENTRY FORM FIELD(S) INPUT', status=status.HTTP_400_BAD_REQUEST)
 
 
 # VIEW ONE TASK
 @api_view(['GET'])
 def getOneTask(request, pk):
+    task = None
     try:
         task = Task.objects.get(pk=pk)
         serialized = TaskSerializer(task)
         return Response(data=serialized.data, status=status.HTTP_200_OK)
     except Task.DoesNotExist:
-        return Response(data='ENTRY NOT FOUND', status=status.HTTP_404_NOT_FOUND)
+        raise Http404
 
 
 # VIEW TASK LIST
@@ -70,7 +70,7 @@ def taskDelete(request, pk):
         deleteMessage = "DROP ENTRY SUCCESSFUL FOR ID: %s" % (pk)
         return Response(data=deleteMessage, status=status.HTTP_204_NO_CONTENT)
     except Task.DoesNotExist:
-        return Response(data='ENTRY NOT FOUND', status=status.HTTP_404_NOT_FOUND)
+        raise Http404
 
 
 # EDIT ONE TASK
@@ -105,4 +105,4 @@ def taskEdit(request, pk):
         else:
             return Response(data='INVALID FORM ENTRY', status=status.HTTP_400_BAD_REQUEST)
     except Task.DoesNotExist:
-        return Response(data='ENTRY NOT FOUND', status=status.HTTP_404_NOT_FOUND)
+        raise Http404

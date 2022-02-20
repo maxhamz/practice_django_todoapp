@@ -114,7 +114,12 @@ You are now ready to work on or review the functionalities.
         ```
     * Error Response(s):
         - Code: 404
-        - Example: `"ENTRY NOT FOUND"`
+        - Example:
+        ```
+        {
+            "detail": "Not found."
+        }
+        ```
 
 3.  LIST ALL: `tasks/getList`
     * Method: `GET`
@@ -177,7 +182,12 @@ You are now ready to work on or review the functionalities.
         ```
     * Error Response(s):
       1.  Code: 404
-          Example: `"ENTRY NOT FOUND"`
+          Example:
+          ```
+          {
+            "detail": "Not found."
+          }
+          ```
       2.  Code: 400
           Example: `"FORBIDDEN INPUT FIELD: ['id', 'created_at']"`
 
@@ -193,6 +203,11 @@ You are now ready to work on or review the functionalities.
         - Example: `"DROP ENTRY SUCCESSFUL FOR ID: 4"`
     * Error Response(s):
         - Code: 404
-        - Example: `"ENTRY NOT FOUND"`
+        - Example:
+        ```
+        {
+            "detail": "Not found."
+        }
+        ```
   
 <br>
