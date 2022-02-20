@@ -27,7 +27,7 @@ This project assumes you have the following installed in your machine:
 1. Create an empty folder to 'house' the virtual environment necessary for this app (e.g. `my_django_house`)
 2. Go to the directory `my_django_house` and generate the virtual environment
     `python3 -m venv .` (the `.` syntax signifies current directory we are visiting)
-3. Be sure to be in the same directory as the `bin` file, then activate the virtual environment
+3. Be sure to be in the same directory as the `bin` folder, then activate the virtual environment
     `source ./bin/activate`
 4. Install the important packages above in the FOLLOWING ORDERS using `pip3 install` command
 5. Setup the Django project for this app (I'm choosing the name `todoapp` as the 'table' for the project itself)
