@@ -13,7 +13,7 @@ from .serializers import TaskSerializer
 def ApiOverview(request):
     api_urls = {
         'admin_panel': 'admin/',
-        'all_tasks': 'tasks/',
+        'all_tasks': 'tasks/getList',
         'get_specific_task': 'tasks/<id>/getOne',
         'add_new_task': 'tasks/create',
         'edit_one_task': 'tasks/<id>/edit',
