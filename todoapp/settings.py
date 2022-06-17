@@ -37,10 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'todoapp_backend.apps.TodoappBackendConfig',
+    'task.apps.TaskConfig',
     'rest_framework',
     'corsheaders',
 ]
+
+
+# AUTH_USER_MODEL = 'todoapp_accounts.Account'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -83,7 +86,7 @@ DATABASES = {
     # },
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'test_django_todo_app',
+        'NAME': 'test_django_todoapp',
         'USER': 'dev',
         'PASSWORD': 'default',
         'HOST': '127.0.0.1',
@@ -137,7 +140,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
     ]
+    
 }
 
 CORS_ALLOWED_ORIGINS = [

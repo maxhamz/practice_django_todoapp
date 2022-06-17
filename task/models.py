@@ -9,6 +9,7 @@ class Task(models.Model):
     created_at = models.DateTimeField(default=timezone.now())
     completed = models.BooleanField(default=False, null=True, blank=True)
     last_modified_at = models.DateTimeField(default=timezone.now())
+    # owner = models.ForeignKey('Account', related_name='tasks')
     
     class Meta:
         ordering = ('-created_at',)
