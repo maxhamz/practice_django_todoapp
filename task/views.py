@@ -1,8 +1,11 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework import serializers, status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.utils import timezone
 from .models import Task
+from core.user.serializers import UserSerializer
 from .serializers import TaskSerializer
 
 
@@ -10,6 +13,8 @@ from .serializers import TaskSerializer
 
 # HOME VIEW
 @api_view(['GET'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def ApiOverview(request):
     api_urls = {
         'admin_panel': 'admin/',
@@ -25,15 +30,34 @@ def ApiOverview(request):
 
 # CREATE NEW TASK
 @api_view(['POST'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def addNewTask(request):
+    print('hello, now creating new task \n')
+    print(request.data)
+    
+    print('\n what are the headers')
+    print(request.headers)
     newTask = TaskSerializer(data=request.data)
     
     # # validating for already existing data
     # if Task.objects.filter(**request.data).exists():
     #     raise serializers.ValidationError('Task already exist')
     
+    print('validitt test')
+    print(newTask.is_valid())
+    print(request.user)
+    print('this is the taskowner')
+    taskOwner = UserSerializer(request.user)
+    print(taskOwner)
+    
+    newTask.taskmaster = taskOwner
+    
     if newTask.is_valid():
-        newTask.save()
+        print('yes bnew task is valid. now saving it')
+        print('this is newtask before save')
+        print(newTask.taskmaster)
+        newTask.save(taskmaster=request.user)
         return Response(data=newTask.data, status=status.HTTP_201_CREATED)
     
     else:
@@ -44,6 +68,8 @@ def addNewTask(request):
 
 # VIEW ONE TASK
 @api_view(['GET'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def getOneTask(request, pk):
     try:
         task = Task.objects.get(pk=pk)
@@ -55,6 +81,8 @@ def getOneTask(request, pk):
 
 # VIEW TASK LIST
 @api_view(['GET'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def getTasksList(request):
     tasks = Task.objects.all()
     serialized = TaskSerializer(tasks, many=True)
@@ -63,6 +91,8 @@ def getTasksList(request):
 
 # DROP ONE TASK
 @api_view(['DELETE'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def taskDelete(request, pk):
     try:
         task = Task.objects.get(pk=pk)
@@ -75,6 +105,8 @@ def taskDelete(request, pk):
 
 # EDIT ONE TASK
 @api_view(['PUT'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def taskEdit(request, pk):
     noEditFields = ["id", "created_at", "last_modified_at"]
     try:
