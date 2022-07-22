@@ -1,5 +1,6 @@
 from django.utils import timezone
 from django.db import models
+from core.user import models as UserModel
 
 
 # Create your models here.
@@ -9,7 +10,7 @@ class Task(models.Model):
     created_at = models.DateTimeField(default=timezone.now())
     completed = models.BooleanField(default=False, null=True, blank=True)
     last_modified_at = models.DateTimeField(default=timezone.now())
-    # owner = models.ForeignKey('Account', related_name='tasks')
+    taskmaster = models.ForeignKey(UserModel.User, related_name='tasks', on_delete=models.CASCADE)
     
     class Meta:
         ordering = ('-created_at',)
