@@ -22,4 +22,5 @@ urlpatterns = [
     path('', ApiOverview),
     path('admin/', admin.site.urls),
     path('tasks/', include('task.routers')),
+    path('api/', include(('core.routers', 'core'), namespace='core-api')),
 ]

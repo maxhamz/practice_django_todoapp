@@ -8,18 +8,18 @@ from django.utils.timezone import utc
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('task', '0001_initial'),
+        ('task', '0002_alter_task_created_at_alter_task_last_modified_at'),
     ]
 
     operations = [
         migrations.AlterField(
             model_name='task',
             name='created_at',
-            field=models.DateTimeField(default=datetime.datetime(2022, 7, 2, 18, 21, 21, 76572, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(2022, 7, 2, 18, 21, 23, 853804, tzinfo=utc)),
         ),
         migrations.AlterField(
             model_name='task',
             name='last_modified_at',
-            field=models.DateTimeField(default=datetime.datetime(2022, 7, 2, 18, 21, 21, 76604, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(2022, 7, 2, 18, 21, 23, 853839, tzinfo=utc)),
         ),
     ]

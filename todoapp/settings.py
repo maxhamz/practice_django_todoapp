@@ -40,10 +40,12 @@ INSTALLED_APPS = [
     'task.apps.TaskConfig',
     'rest_framework',
     'corsheaders',
+    'core',
+    'core.user'
 ]
 
 
-# AUTH_USER_MODEL = 'todoapp_accounts.Account'
+AUTH_USER_MODEL = 'core_user.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -86,7 +88,7 @@ DATABASES = {
     # },
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'test_django_todoapp',
+        'NAME': 'test_django_todoapp_1',
         'USER': 'dev',
         'PASSWORD': 'default',
         'HOST': '127.0.0.1',
@@ -139,8 +141,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'rest_framework.permissions.AllowAny',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',

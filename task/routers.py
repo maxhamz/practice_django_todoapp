@@ -9,6 +9,4 @@ urlpatterns = [
     path('getOne/<int:pk>', getOneTask, name='retrieve-task'),
     path('drop/<int:pk>', taskDelete, name='drop-task'),
     path('edit/<int:pk>', taskEdit, name='edit-task'),
-    # path('tasks/getList/', TaskDetail.as_view(), name='task_detail'),
-    # path('tasks/', TaskList.as_view(), name='task_list'),
 ]
